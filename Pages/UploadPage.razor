@@ -1,0 +1,50 @@
+﻿@page "/upload"
+
+@using ProdUp.Data
+@inject WooCommerceAPIService WooCommerceAPIService
+
+<h1>Product list</h1>
+
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        @foreach (var product in products)
+        {
+            <div>
+                <div>
+                    <MudCarousel Class="mud-width-full" Style="height: 200px; overflow: hidden;" ShowBullets="true" EnableSwipeGesture="true" AutoCycle="true" TData="object">
+                        @foreach (var image in product.Images.Split(","))
+                        {
+                            <MudCarouselItem Transition="Transition.Slide" Color="@Color.Transparent">
+                                <div class="d-flex" style="height: 100%; overflow: hidden;">
+                                    <MudImage Class="mx-auto my-auto" Src="@image" style="height: 100%;" />
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    </MudCarousel>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h4>@product.Name</h4>
+                    <h3>@product.Regular_price</h3>
+                </div>
+                <h5>@product.Short_description.Replace("<p>","").Replace("</p>","")</h5>
+                <MudDivider />
+            </div>
+        }
+            
+    </div>        
+}
+
+@code {
+    private List<ProductInfo> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Data.WooCommerceAPIService.GetProductListAsync();
+    }
+}
